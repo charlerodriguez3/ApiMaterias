@@ -9,6 +9,6 @@ namespace ApiMaterias.Controllers
     [Authorize]
     public class ApiMateriasController : ControllerBase
     {
-
+         
     }
 }
