@@ -8,5 +8,8 @@ namespace ApiMaterias.Aplicacion.Interfaces
         Task<bool> ValidarCredenciales(string correo, string clave);
 
         Task<Estudiante> GetEstudianteByCorreo(string correo);
+
+
+        Task<List<MateriasXEstudiante>> GetMisMaterias(int id);
     }
 }

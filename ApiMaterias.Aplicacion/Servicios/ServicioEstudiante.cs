@@ -23,6 +23,11 @@ namespace ApiMaterias.Aplicacion.Servicios
             return await _repo.GetEstudianteByCorreo(correo);
         }
 
+        public async Task<List<MateriasXEstudiante>> GetMisMaterias(int id)
+        {
+           return await _repo.GetMisMaterias(id);
+        }
+
         public async Task<bool> ValidarCredenciales(string correo, string clave)
         {
             return await _repo.ValidarCredenciales(correo, clave);

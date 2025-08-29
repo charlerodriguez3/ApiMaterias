@@ -87,6 +87,45 @@ namespace ApiMaterias.Infraestructura.Repositorios
             }
         }
 
+        public async Task<List<MateriasXEstudiante>> GetMisMaterias(int id)
+        {
+            List<MateriasXEstudiante> materias = new List<MateriasXEstudiante>();
+            using (SqlConnection conn = new SqlConnection(_db.CrearConexion()))
+            {
+                try
+                {
+                    await conn.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("sp_registrosMisMaterias", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Id", id);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            while(await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                materias.Add( new MateriasXEstudiante{
+                                    ClaseId = reader.GetInt32(reader.GetOrdinal("C_id")),
+                                    ProfeId = reader.GetInt32(reader.GetOrdinal("P_id")),
+                                    NombreProfe = reader.GetString(reader.GetOrdinal("P_nombre")),
+                                    ApellidoProfe = reader.GetString(reader.GetOrdinal("P_apellido")),
+                                    MateriaId = reader.GetInt32(reader.GetOrdinal("M_id")),
+                                    NombreMateria= reader.GetString(reader.GetOrdinal("M_nombre")),
+                                    CreditosMateria = reader.GetInt32(reader.GetOrdinal("M_creditos"))
+                                });
+                            }
+                            return materias;
+                        }
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    throw new Exception("Error al obtener mis materias", ex);
+                }
+            }
+        }
+
         public async Task<bool> ValidarCredenciales(string correo, string clave)
         {
 
@@ -100,8 +139,15 @@ namespace ApiMaterias.Infraestructura.Repositorios
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Correo", correo);
                         cmd.Parameters.AddWithValue("@Clave", clave);
-                        var result = (int)await cmd.ExecuteScalarAsync();
-                        return result > 0;
+                        var result = await cmd.ExecuteScalarAsync();
+                        if (result == DBNull.Value || result == null)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }    
                     }
                 }
                 catch (Exception ex)
@@ -110,45 +156,5 @@ namespace ApiMaterias.Infraestructura.Repositorios
                 }
             }
         }
-
-        //public async Task<Estudiante?> CrearEstudiante(Estudiante estudiante)
-        //{
-        //    using (SqlConnection conn = new SqlConnection(_db.CrearConexion()))
-        //    {
-        //        try
-        //        {
-        //            conn.Open();
-        //            using (SqlCommand cmd = new SqlCommand("sp_insertarEstudiante", conn))
-        //            {
-        //                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-        //                cmd.Parameters.AddWithValue("@Nombre", estudiante.Nombre);
-        //                cmd.Parameters.AddWithValue("@Apellido", estudiante.Apellido);
-        //                cmd.Parameters.AddWithValue("@Correo", estudiante.Correo);
-        //                cmd.Parameters.AddWithValue("@Clave", estudiante.Clave);
-
-        //                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-        //                {
-        //                    if (await reader.ReadAsync())
-        //                    {
-        //                        return new Estudiante
-        //                        {
-        //                            Id = reader.GetInt32(0),
-        //                            Nombre = reader.GetString(1),
-        //                            Apellido = reader.GetString(2),
-        //                            Correo = reader.GetString(3),
-        //                            Clave = reader.GetString(4),
-        //                            Creditos = reader.GetInt32(5)
-        //                        };
-        //                    }
-        //                    return null;
-        //                }
-        //            }
-        //        }
-        //        catch (SqlException ex)
-        //        {
-        //            throw new Exception("Error al crear estudiante", ex);
-        //        }
-        //    }
-        //}
     }
 }

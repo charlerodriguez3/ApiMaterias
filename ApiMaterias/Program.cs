@@ -79,6 +79,8 @@ namespace ApiMaterias
 
             builder.Services.AddScoped<IEstudianteRepo, EstudianteRepositorio>();
             builder.Services.AddScoped<IEstudiante, ServicioEstudiante>();
+            builder.Services.AddScoped<IMateriaRepo, MateriaRepositorio>();
+            builder.Services.AddScoped<IMateria, ServicioMateria>();
 
             var app = builder.Build();
 

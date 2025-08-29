@@ -41,5 +41,18 @@ namespace ApiMaterias.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("GetMisMaterias/{id}")]
+        public async Task<IActionResult> GetMisMaterias(int id)
+        {
+            try
+            {
+                return Ok(await _estudiante.GetMisMaterias(id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
